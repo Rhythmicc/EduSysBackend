@@ -6,8 +6,8 @@ database = None
 try:
     database = pymysql.connect(
         host='rm-2ze17saovz0800382ao.mysql.rds.aliyuncs.com',
-        user='rhythmlian',
-        password='19980501',
+        user='edu_sys_client',
+        password='P7pXAFKXbMLB3D5vTdmhnT4OX96XFQBd',
         database='softwaredesign',
         charset='utf8'
     )
