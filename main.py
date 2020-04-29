@@ -20,7 +20,9 @@ async def register_student(dt: StudentInfo):
     if res:
         res = StudentAPI.AddStudent(dt.user_id, dt.name, dt.gender == 'male',
                                     dt.college, dt.profession, dt.grade)
-        msg = 'success'
+        msg = 'success' if res else 'failed'
+        if not res:
+            UserAPI.delete(dt.user_id)
     return {'status': res, 'msg': msg}
 
 
@@ -30,7 +32,9 @@ async def register_teacher(dt: TeacherInfo):
     res = UserAPI.register(dt.user_id, dt.pwd, 1)
     if res:
         res = TeacherAPI.AddTeacher(dt.user_id, dt.name, dt.gender == 'male', dt.title, dt.college)
-        msg = 'success'
+        msg = 'success' if res else 'failed'
+        if not res:
+            UserAPI.delete(dt.user_id)
     return {'status': res, 'msg': msg}
 
 
@@ -40,7 +44,9 @@ async def register_manager(dt: AdminInfo):
     res = UserAPI.register(dt.user_id, dt.pwd, 2)
     if res:
         res = AdminAPI.AddAdmin(dt.user_id, dt.name, dt.gender == 'male')
-        msg = 'success'
+        msg = 'success' if res else 'failed'
+        if not res:
+            UserAPI.delete(dt.user_id)
     return {'status': res, 'msg': msg}
 
 

@@ -17,14 +17,14 @@ class TeacherAPI:
     def AddTeacher(user_id: str, name: str, gender: bool,
                    title: str, college: str):
         with database.cursor(cursor=pymysql.cursors.DictCursor) as cur:
-            cur.execute(TeacherAPI.AddTeacher % (
+            res = cur.execute(TeacherAPI.addTeacher % (
                 pre_deal_string(user_id),
                 pre_deal_string(name), gender,
                 pre_deal_string(title),
                 pre_deal_string(college)
             ))
         database.commit()
-        return True
+        return res == 1
 
     @staticmethod
     @APIFuncWrapper

@@ -1,6 +1,6 @@
 compile_tool,,
 compile_filename,main.py
-executable_filename,nohup uvicorn main:app --reload > /dev/null 2>&1 &
+executable_filename,nohup uvicorn main:server --reload > /dev/null 2>&1 &
 input_file,dist/input.txt
 template_root,template/
-server_target,
+server_target,haochenglian@118.31.73.98:Downloads/EduSysBackend/
