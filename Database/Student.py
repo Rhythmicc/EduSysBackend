@@ -33,6 +33,29 @@ class StudentAPI:
 
     @staticmethod
     @APIFuncWrapper
+    def DelStudent(user_id: str):
+        with database.cursor(cursor=pymysql.cursors.DictCursor) as cur:
+            res = cur.execute(StudentAPI.delStudent % pre_deal_string(user_id))
+            database.commit()
+        return res
+
+    @staticmethod
+    @APIFuncWrapper
+    def AltStudent(user_id: str, name: str, gender: bool,
+                   college: str, profession: str, grade: int):
+        with database.cursor(cursor=pymysql.cursors.DictCursor) as cur:
+            cur.execute(StudentAPI.addStudent % (
+                pre_deal_string(name),
+                gender,
+                pre_deal_string(college),
+                pre_deal_string(profession), grade,
+                pre_deal_string(user_id)
+            ))
+        database.commit()
+        return True
+
+    @staticmethod
+    @APIFuncWrapper
     def QrySchedule(user_id):
         with database.cursor(cursor=pymysql.cursors.DictCursor) as cur:
             cur.execute(StudentAPI.qrySchedule % pre_deal_string(user_id))

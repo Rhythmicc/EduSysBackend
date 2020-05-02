@@ -8,13 +8,13 @@ from fastapi import APIRouter
 router = APIRouter()
 
 
-@router.get('/login/{user_id}', tags=['user'])
+@router.get('/login/{user_id}')
 async def login(user_id: str, pwd: str):
     status, role = UserAPI.query(user_id, pwd)
     return {'status': status, 'role': role}
 
 
-@router.post('/register/student', tags=['user'])
+@router.post('/register/student')
 async def register_student(dt: StudentInfo):
     msg = 'User exists'
     res = UserAPI().register(dt.user_id, dt.pwd, 0)
@@ -27,7 +27,7 @@ async def register_student(dt: StudentInfo):
     return {'status': res, 'msg': msg}
 
 
-@router.post('/register/teacher', tags=['user'])
+@router.post('/register/teacher')
 async def register_teacher(dt: TeacherInfo):
     msg = 'User exists'
     res = UserAPI.register(dt.user_id, dt.pwd, 1)
@@ -39,7 +39,7 @@ async def register_teacher(dt: TeacherInfo):
     return {'status': res, 'msg': msg}
 
 
-@router.post('/register/manager', tags=['user'])
+@router.post('/register/manager')
 async def register_manager(dt: AdminInfo):
     msg = 'User exists'
     res = UserAPI.register(dt.user_id, dt.pwd, 2)

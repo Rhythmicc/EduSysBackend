@@ -143,5 +143,5 @@ class CourseAPI:
     def SelectCourse(user_id: str, course_id: int):
         with database.cursor(cursor=pymysql.cursors.DictCursor) as cur:
             cur.execute(CourseAPI.selectCourse % (pre_deal_string(user_id), course_id))
-        database.commit()
+            database.commit()
         return True
