@@ -2,11 +2,13 @@ from Database import database, pymysql, pre_deal_string, APIFuncWrapper
 
 
 class CourseAPI:
-    addCourse = 'insert into courseinfo(name, score, weeks, time_ls, loc_ls) VALUES (%s, %s, %s, %s, %s)'
+    addCourse = 'insert into courseinfo(name, score, start_week, weeks, time_ls, loc_ls) VALUES (%s, %s, %s, %s, %s, ' \
+                '%s) '
     addCourseScore = 'update studentcourse set score=%s where user_id=%s and course_id=%s'
     delCourse = 'delete from courseinfo where course_id=%s'
     delCourseScore = 'update studentcourse set score=-1 where user_id=%s and course_id=%s'
-    altCourse = 'update courseinfo set name=%s, score=%s, weeks=%s, time_ls=%s, loc_ls=%s where course_id=%s'
+    altCourse = 'update courseinfo set name=%s, score=%s, start_week=%s, weeks=%s, time_ls=%s, loc_ls=%s where ' \
+                'course_id=%s '
     qryCourse = 'select * from courseinfo where course_id=%s'
     qryCourseNamed = 'select * from courseinfo where name like %s'
     qryActiveCourseWithStudent = 'select * from studentcourse where user_id=%s and score=-1'
@@ -19,9 +21,9 @@ class CourseAPI:
 
     @staticmethod
     @APIFuncWrapper
-    def AddCourse(name: str, score: int, weeks: int, time_ls: list, loc_ls: list):
+    def AddCourse(name: str, score: int, start_week: int, weeks: int, time_ls: list, loc_ls: list):
         with database.cursor(cursor=pymysql.cursors.DictCursor) as cur:
-            res = cur.execute(CourseAPI.addCourse % (pre_deal_string(name), score, weeks,
+            res = cur.execute(CourseAPI.addCourse % (pre_deal_string(name), score, start_week, weeks,
                                                      pre_deal_string(' '.join(time_ls)),
                                                      pre_deal_string(' '.join(loc_ls))))
             database.commit()
@@ -53,9 +55,9 @@ class CourseAPI:
 
     @staticmethod
     @APIFuncWrapper
-    def AltCourse(course_id: int, name: str, score: int, weeks: int, time_ls: list, loc_ls: list):
+    def AltCourse(course_id: int, name: str, score: int, start_week: int, weeks: int, time_ls: list, loc_ls: list):
         with database.cursor(cursor=pymysql.cursors.DictCursor) as cur:
-            res = cur.execute(CourseAPI.altCourse % (pre_deal_string(name), score, weeks,
+            res = cur.execute(CourseAPI.altCourse % (pre_deal_string(name), score, start_week, weeks,
                                                      pre_deal_string(' '.join(time_ls)),
                                                      pre_deal_string(' '.join(loc_ls)), course_id))
             database.commit()
