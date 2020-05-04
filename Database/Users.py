@@ -1,4 +1,4 @@
-from Database import database, pymysql, pre_deal_string, APIFuncWrapper
+from . import database, pymysql, pre_deal_string, APIFuncWrapper
 
 
 class UserAPI:

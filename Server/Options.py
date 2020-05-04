@@ -1,3 +1,4 @@
+from Database.Options import OptionAPI
 from fastapi import APIRouter
 from . import DayForm
 
@@ -11,13 +12,11 @@ async def QuitService():
     exit(0)
 
 
-@router.post('/setStartDay')
+@router.post('/SetStartDay')
 async def Set_Start_Day(dt: DayForm):
-    from Database.Options import OptionAPI
     return {'status': OptionAPI.setStartDay(dt.year, dt.semester, dt.start_day)}
 
 
 @router.post('/AddStartDay')
 async def Add_Start_Day(dt: DayForm):
-    from Database.Options import OptionAPI
     return {'status': OptionAPI.AddStartDay(dt.year, dt.semester, dt.start_day)}
