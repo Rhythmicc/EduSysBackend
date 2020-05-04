@@ -1,5 +1,9 @@
-import pymysql
+import datetime
+import math
 import sys
+
+import pymysql
+
 sys.path.append('..')
 
 database = None
@@ -14,6 +18,21 @@ try:
 except Exception as e:
     print(repr(e))
     exit('Link Database failed!')
+else:
+    with database.cursor(cursor=pymysql.cursors.DictCursor) as cur:
+        res = cur.execute('select start_day from timeinfo where year=2020 and semester=1')
+        if res:
+            start_day = cur.fetchall()[0]['start_day']
+        else:
+            start_day = False
+
+
+def autoCalWeek():
+    if not start_day:
+        return False
+    today = datetime.date.today()
+    assert isinstance(start_day, datetime.date)
+    return math.ceil(((today - start_day).days + 1) / 7)
 
 
 def pre_deal_string(string):

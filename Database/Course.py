@@ -1,4 +1,4 @@
-from Database import database, pymysql, pre_deal_string, APIFuncWrapper
+from Database import database, pymysql, pre_deal_string, APIFuncWrapper, autoCalWeek
 
 
 class CourseAPI:
@@ -16,6 +16,12 @@ class CourseAPI:
     qryActiveCourseWithTeacher = 'select * from teachercourse where user_id=%s and active'
     qryHistoryCourseWithTeacher = 'select * from teachercourse where user_id=%s and not active'
     qrySelectableCourse = 'select * from courseinfo where course_id in (select course_id from elective where rest>0)'
+    qryScheduleWithStudent = 'select * from studentcourse, courseinfo where studentcourse.score < 0 ' \
+                             'and studentcourse.user_id like %s and ' \
+                             'courseinfo.start_week >= %s '
+    qryScheduleWithTeacher = 'select * from teachercourse, courseinfo where teachercourse.active ' \
+                             'and teachercourse.user_id like %s and ' \
+                             'courseinfo.start_week >= %s '
     qryAllCourse = 'select * from courseinfo'
     selectCourse = 'insert into studentcourse(user_id, course_id) VALUES (%s, %s)'
 
@@ -147,3 +153,25 @@ class CourseAPI:
             cur.execute(CourseAPI.selectCourse % (pre_deal_string(user_id), course_id))
             database.commit()
         return True
+
+    @staticmethod
+    @APIFuncWrapper
+    def QryScheduleWithStudent(user_id: str):
+        cur_week = autoCalWeek()
+        with database.cursor(cursor=pymysql.cursors.DictCursor) as cur:
+            res = cur.execute(CourseAPI.qryScheduleWithStudent % (pre_deal_string(user_id), cur_week))
+            if res:
+                return cur.fetchall()
+            else:
+                return {'status': False}
+
+    @staticmethod
+    @APIFuncWrapper
+    def QryScheduleWithTeacher(user_id: str):
+        cur_week = autoCalWeek()
+        with database.cursor(cursor=pymysql.cursors.DictCursor) as cur:
+            res = cur.execute(CourseAPI.qryScheduleWithTeacher % (pre_deal_string(user_id), cur_week))
+            if res:
+                return cur.fetchall()
+            else:
+                return {'status': False}

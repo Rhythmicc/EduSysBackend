@@ -35,3 +35,9 @@ class CourseInfo(BaseModel):
     weeks: int
     time_ls: list
     loc_ls: list
+
+
+class DayForm(BaseModel):
+    year: int
+    semester: int
+    start_day: str
