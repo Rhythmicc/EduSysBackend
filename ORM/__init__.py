@@ -17,7 +17,7 @@ def APIFuncWrapper(need_commit=True):
                 ret = func(*args, **kwargs, session=session)
                 if need_commit:
                     session.commit()
-            except Exception as e:
+            except Exception:
                 ret = {'status': False}
                 session.rollback()
             finally:

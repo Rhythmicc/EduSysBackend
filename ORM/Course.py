@@ -132,28 +132,34 @@ class CourseAPI:
     @APIFuncWrapper(need_commit=False)
     def QryScheduleWithStudent(user_id: str, session: Session = None):
         week = autoCalWeek()
-        ls = session.query(CourseInfo) \
+        ls = session.query(CourseInfo.time_ls, CourseInfo.name) \
             .filter(CourseInfo.course_id.in_(
                 [i[0] for i in session.query(StudentCourse.course_id)
-                    .filter(StudentCourse.user_id.like(user_id))
-                    .filter(StudentCourse.score < 0)
-                    .filter(CourseInfo.start_week <= week).all()]
+                    .filter(StudentCourse.course_id.in_(
+                        [i[0] for i in session.query(CourseInfo.course_id)
+                            .filter(CourseInfo.start_week <= week)
+                            .filter(CourseInfo.start_week + CourseInfo.weeks > week).all()
+                         ]))
+                    .filter(StudentCourse.user_id.like(user_id)).all()]
             )).all()
-        ret = [to_dict(i) for i in ls] if ls else {'status': False}
+        ret = ls if ls else {'status': False}
         return ret
 
     @staticmethod
     @APIFuncWrapper(need_commit=False)
     def QryScheduleWithTeacher(user_id: str, session: Session = None):
         week = autoCalWeek()
-        ls = session.query(CourseInfo) \
+        ls = session.query(CourseInfo.time_ls, CourseInfo.name) \
             .filter(CourseInfo.course_id.in_(
-                [i[0] for i in session.query(TeacherCourse.course_id)
-                    .filter(TeacherCourse.user_id.like(user_id))
-                    .filter(TeacherCourse.active)
-                    .filter(CourseInfo.start_week <= week).all()]
-            )).all()
-        ret = [to_dict(i) for i in ls] if ls else {'status': False}
+                [i[0] for i in session.query(StudentCourse.course_id)
+                    .filter(StudentCourse.course_id.in_(
+                        [i[0] for i in session.query(CourseInfo.course_id)
+                            .filter(CourseInfo.start_week <= week)
+                            .filter(CourseInfo.start_week + CourseInfo.weeks > week).all()
+                        ]))
+                    .filter(StudentCourse.user_id.like(user_id)).all()]
+        )).all()
+        ret = ls if ls else {'status': False}
         return ret
 
     @staticmethod

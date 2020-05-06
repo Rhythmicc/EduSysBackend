@@ -1,3 +1,3 @@
-from ORM.Users import UserAPI
+from ORM.Course import CourseAPI
 
-print(UserAPI.QryUser("2017011344", "123456"))
+print(CourseAPI.QryScheduleWithStudent("2017011344"))
