@@ -22,3 +22,13 @@ async def Teacher_Schedule(user_id: str):
 @router.get('/Teacher/HistoryCourse/{user_id}')
 async def Teacher_History_Course(user_id):
     return CourseAPI.QryHistoryCourseWithTeacher(user_id)
+
+
+@router.get('/Student/Courses/{user_id}')
+async def Student_Active_Courses(user_id: str):
+    return CourseAPI.QryActiveCourseWithStudent(user_id)
+
+
+@router.get('/Teacher/Courses/{user_id}')
+async def Student_Active_Courses(user_id: str):
+    return CourseAPI.QryActiveCourseWithTeacher(user_id)

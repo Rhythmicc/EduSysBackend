@@ -132,7 +132,7 @@ class CourseAPI:
     @APIFuncWrapper(need_commit=False)
     def QryScheduleWithStudent(user_id: str, session: Session = None):
         week = autoCalWeek()
-        ls = session.query(CourseInfo.time_ls, CourseInfo.name) \
+        ls = session.query(CourseInfo.time_ls, CourseInfo.name, CourseInfo.loc_ls) \
             .filter(CourseInfo.course_id.in_(
                 [i[0] for i in session.query(StudentCourse.course_id)
                     .filter(StudentCourse.course_id.in_(
@@ -149,16 +149,16 @@ class CourseAPI:
     @APIFuncWrapper(need_commit=False)
     def QryScheduleWithTeacher(user_id: str, session: Session = None):
         week = autoCalWeek()
-        ls = session.query(CourseInfo.time_ls, CourseInfo.name) \
+        ls = session.query(CourseInfo.time_ls, CourseInfo.name, CourseInfo.loc_ls) \
             .filter(CourseInfo.course_id.in_(
                 [i[0] for i in session.query(StudentCourse.course_id)
                     .filter(StudentCourse.course_id.in_(
                         [i[0] for i in session.query(CourseInfo.course_id)
                             .filter(CourseInfo.start_week <= week)
                             .filter(CourseInfo.start_week + CourseInfo.weeks > week).all()
-                        ]))
+                         ]))
                     .filter(StudentCourse.user_id.like(user_id)).all()]
-        )).all()
+            )).all()
         ret = ls if ls else {'status': False}
         return ret
 
