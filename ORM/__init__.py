@@ -31,14 +31,14 @@ def to_dict(obj):
     return {c.name: getattr(obj, c.name) for c in obj.__table__.columns}
 
 
-def autoCalWeek():
+@APIFuncWrapper(need_commit=False)
+def autoCalWeek(session: Session = None):
     from ORM.Tables import TimeInfo
     today = datetime.date.today()
     year = today.year
     semester = 1 if today.month <= 7 else 2
-    with SessionMaker(need_commit=False) as session:
-        start_day = session.query(TimeInfo.start_day).filter(
-            TimeInfo.year == year and TimeInfo.semester == semester).first()
+    start_day = session.query(TimeInfo.start_day).filter(
+        TimeInfo.year == year and TimeInfo.semester == semester).first()
     if start_day:
         return math.ceil(((today - start_day[0]).days + 1) / 7)
     else:
