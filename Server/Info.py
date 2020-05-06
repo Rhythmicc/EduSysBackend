@@ -1,6 +1,6 @@
-from Database.Student import StudentAPI
-from Database.Teacher import TeacherAPI
-from Database.Admin import AdminAPI
+from ORM.Student import StudentAPI
+from ORM.Teacher import TeacherAPI
+from ORM.Admin import AdminAPI
 from fastapi import APIRouter
 from . import *
 
@@ -9,34 +9,33 @@ router = APIRouter()
 
 @router.get('/student/{user_id}')
 async def Query_Student_Info(user_id: str):
-    return StudentAPI.QueryInfo(user_id)
+    return StudentAPI.QryStudent(user_id)
 
 
 @router.get('/teacher/{user_id}')
 async def Query_Teacher_Info(user_id: str):
-    return TeacherAPI.QueryInfo(user_id)
+    return TeacherAPI.QryTeacher(user_id)
 
 
 @router.get('/manager/{user_id}')
 async def Query_Manager_Info(user_id: str):
-    return AdminAPI.QueryInfo(user_id)
+    return AdminAPI.QryAdmin(user_id)
 
 
 @router.post('/altStudent')
 async def Alter_Student(dt: StudentInfo):
-    return {'status': StudentAPI.AltStudent(
+    return StudentAPI.AltStudent(
         dt.user_id, dt.name, dt.gender == 'male',
-        dt.college, dt.profession, dt.grade)}
+        dt.college, dt.profession, dt.grade)
 
 
 @router.post('/altTeacher')
 async def Alter_Teacher(dt: TeacherInfo):
-    return {'status': TeacherAPI.AltTeacher(
+    return TeacherAPI.AltTeacher(
         dt.user_id, dt.name, dt.gender == 'male',
-        dt.title, dt.college)}
+        dt.title, dt.college)
 
 
 @router.post('/info/altManager')
 async def AltManager(dt: AdminInfo):
-    return {'status': AdminAPI.AltAdmin(
-        dt.user_id, dt.name, dt.gender == 'male')}
+    return AdminAPI.AltAdmin(dt.user_id, dt.name, dt.gender == 'male')

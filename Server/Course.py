@@ -1,4 +1,4 @@
-from Database.Course import CourseAPI
+from ORM.Course import CourseAPI
 from fastapi import APIRouter
 
 router = APIRouter()

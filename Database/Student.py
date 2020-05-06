@@ -6,7 +6,7 @@ class StudentAPI:
     qryGrade = 'select courseinfo.name, studentcourse.score ' \
                'from courseinfo, studentcourse ' \
                'where courseinfo.course_id=studentcourse.course_id ' \
-               'and studentcourse.score>0 and studentcourse.user_id like %s'
+               'and studentcourse.score>=0 and studentcourse.user_id like %s'
     qrySchedule = 'select name, weeks from courseinfo where course_id in ' \
                   '(select course_id from studentcourse where user_id like %s)'
     """add student"""

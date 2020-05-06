@@ -33,8 +33,8 @@ class CourseInfo(BaseModel):
     name: str
     score: int
     weeks: int
-    time_ls: list
-    loc_ls: list
+    time_ls: str
+    loc_ls: str
 
 
 class DayForm(BaseModel):

@@ -36,8 +36,7 @@ def autoCalWeek():
 
 
 def pre_deal_string(string):
-    string = string.strip('"')
-    return '"' + string + '"'
+    return '"%s"' % string.strip('"')
 
 
 def APIFuncWrapper(func):

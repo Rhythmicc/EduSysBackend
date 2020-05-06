@@ -8,21 +8,26 @@ class CourseAPI:
     delCourse = 'delete from courseinfo where course_id=%s'
     delCourseScore = 'update studentcourse set score=-1 where user_id=%s and course_id=%s'
     altCourse = 'update courseinfo set name=%s, score=%s, start_week=%s, weeks=%s, time_ls=%s, loc_ls=%s where ' \
-                'course_id=%s '
+                'course_id=%s'
     qryCourse = 'select * from courseinfo where course_id=%s'
     qryCourseNamed = 'select * from courseinfo where name like %s'
-    qryActiveCourseWithStudent = 'select * from studentcourse where user_id=%s and score=-1'
-    qryHistoryCourseWithStudent = 'select * from studentcourse where user_id=%s and score>0'
-    qryActiveCourseWithTeacher = 'select * from teachercourse where user_id=%s and active'
-    qryHistoryCourseWithTeacher = 'select * from teachercourse where user_id=%s and not active'
+    qryActiveCourseWithStudent = 'select * from courseinfo where course_id in (select course_id from studentcourse ' \
+                                 'where user_id like %s and score<0)'
+    qryHistoryCourseWithStudent = 'select * from courseinfo where course_id in (select course_id from studentcourse ' \
+                                  'where user_id like %s and score>=0)'
+    qryActiveCourseWithTeacher = 'select * from courseinfo where course_id in (select course_id from teachercourse ' \
+                                 'where user_id like %s and active)'
+    qryHistoryCourseWithTeacher = 'select * from courseinfo where course_id in (select course_id from teachercourse ' \
+                                  'where user_id like %s and not active)'
     qrySelectableCourse = 'select * from courseinfo where course_id in (select course_id from elective where rest>0)'
     qryScheduleWithStudent = 'select * from studentcourse, courseinfo where studentcourse.score < 0 ' \
                              'and studentcourse.user_id like %s and ' \
-                             'courseinfo.start_week >= %s '
+                             'courseinfo.start_week >= %s'
     qryScheduleWithTeacher = 'select * from teachercourse, courseinfo where teachercourse.active ' \
                              'and teachercourse.user_id like %s and ' \
-                             'courseinfo.start_week >= %s '
+                             'courseinfo.start_week >= %s'
     qryAllCourse = 'select * from courseinfo'
+    preSelectCourse = 'update elective set rest=rest-1 where course_id=%s and rest>0'
     selectCourse = 'insert into studentcourse(user_id, course_id) VALUES (%s, %s)'
 
     @staticmethod
@@ -150,9 +155,20 @@ class CourseAPI:
     @APIFuncWrapper
     def SelectCourse(user_id: str, course_id: int):
         with database.cursor(cursor=pymysql.cursors.DictCursor) as cur:
-            cur.execute(CourseAPI.selectCourse % (pre_deal_string(user_id), course_id))
-            database.commit()
-        return True
+            res = cur.execute(CourseAPI.preSelectCourse % course_id)
+            if res:
+                res = cur.execute(CourseAPI.selectCourse % (pre_deal_string(user_id), course_id))
+                database.commit()
+        return res
+
+    @staticmethod
+    @APIFuncWrapper
+    def SpecialSelectCourse(user_id: str, course_id: int):
+        with database.cursor(cursor=pymysql.cursors.DictCursor) as cur:
+            res = cur.execute(CourseAPI.selectCourse % (pre_deal_string(user_id), course_id))
+            if res:
+                database.commit()
+        return res
 
     @staticmethod
     @APIFuncWrapper
