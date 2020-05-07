@@ -151,13 +151,13 @@ class CourseAPI:
         week = autoCalWeek()
         ls = session.query(CourseInfo.time_ls, CourseInfo.name, CourseInfo.loc_ls) \
             .filter(CourseInfo.course_id.in_(
-                [i[0] for i in session.query(StudentCourse.course_id)
-                    .filter(StudentCourse.course_id.in_(
+                [i[0] for i in session.query(TeacherCourse.course_id)
+                    .filter(TeacherCourse.course_id.in_(
                         [i[0] for i in session.query(CourseInfo.course_id)
                             .filter(CourseInfo.start_week <= week)
                             .filter(CourseInfo.start_week + CourseInfo.weeks > week).all()
                          ]))
-                    .filter(StudentCourse.user_id.like(user_id)).all()]
+                    .filter(TeacherCourse.user_id.like(user_id)).all()]
             )).all()
         ret = ls if ls else {'status': False}
         return ret
