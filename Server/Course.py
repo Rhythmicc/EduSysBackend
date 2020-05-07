@@ -32,3 +32,26 @@ async def Student_Active_Courses(user_id: str):
 @router.get('/Teacher/Courses/{user_id}')
 async def Student_Active_Courses(user_id: str):
     return CourseAPI.QryActiveCourseWithTeacher(user_id)
+
+
+@router.post('/UploadGrade')
+async def Upload_Grade(dt: list):
+    ret = {'status': True}
+    for info in dt:
+        ret = CourseAPI.AddCourseScore(info['user_id'], info['course_id'], info['score'])
+    return ret
+
+
+@router.get('/Teacher/AllCourseIdName/{user_id}')
+async def Teacher_All_CourseId_Name(user_id: str):
+    return CourseAPI.QryAllCourseIdName(user_id)
+
+
+@router.get('/GetStudentsByCourseId/{course_id}')
+async def Get_Students_By_CourseId(course_id: int):
+    return CourseAPI.QryStudentsByCourseId(course_id)
+
+
+@router.get('/GetGradesByStudent/{user_id}')
+async def Get_Grades_By_Student(user_id: str):
+    return CourseAPI.QryGradesByStudent(user_id)

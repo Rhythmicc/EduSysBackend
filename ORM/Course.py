@@ -54,14 +54,14 @@ class CourseAPI:
         return {'status': True}
 
     @staticmethod
-    @APIFuncWrapper(need_commit=False)
+    @APIFuncWrapper
     def QryCourseNamed(name: str, session: Session = None):
         ls = session.query(CourseInfo).filter(CourseInfo.name.like('%' + name + '%')).all()
         ret = [to_dict(i) for i in ls] if ls else {'status': False}
         return ret
 
     @staticmethod
-    @APIFuncWrapper(need_commit=False)
+    @APIFuncWrapper
     def QryActiveCourseWithStudent(user_id: str, session: Session = None):
         ls = session.query(CourseInfo) \
             .filter(CourseInfo.course_id.in_(
@@ -74,7 +74,7 @@ class CourseAPI:
         return ret
 
     @staticmethod
-    @APIFuncWrapper(need_commit=False)
+    @APIFuncWrapper
     def QryActiveCourseWithTeacher(user_id: str, session: Session = None):
         ls = session.query(CourseInfo) \
             .filter(CourseInfo.course_id.in_(
@@ -87,7 +87,7 @@ class CourseAPI:
         return ret
 
     @staticmethod
-    @APIFuncWrapper(need_commit=False)
+    @APIFuncWrapper
     def QryHistoryCourseWithStudent(user_id: str, session: Session = None):
         ls = session.query(CourseInfo) \
             .filter(CourseInfo.course_id.in_(
@@ -100,7 +100,7 @@ class CourseAPI:
         return ret
 
     @staticmethod
-    @APIFuncWrapper(need_commit=False)
+    @APIFuncWrapper
     def QryHistoryCourseWithTeacher(user_id: str, session: Session = None):
         ls = session.query(CourseInfo) \
             .filter(CourseInfo.course_id.in_(
@@ -113,14 +113,14 @@ class CourseAPI:
         return ret
 
     @staticmethod
-    @APIFuncWrapper(need_commit=False)
+    @APIFuncWrapper
     def QryAllCourse(session: Session = None):
         ls = session.query(CourseInfo).all()
         ret = [to_dict(i) for i in ls] if ls else {'status': False}
         return ret
 
     @staticmethod
-    @APIFuncWrapper(need_commit=False)
+    @APIFuncWrapper
     def QrySelectableCourse(session: Session = None):
         ls = session.query(CourseInfo).filter(CourseInfo.course_id.in_(
             [i[0] for i in session.query(Elective.course_id).filter(Elective.rest > 0).all()]
@@ -129,7 +129,7 @@ class CourseAPI:
         return ret
 
     @staticmethod
-    @APIFuncWrapper(need_commit=False)
+    @APIFuncWrapper
     def QryScheduleWithStudent(user_id: str, session: Session = None):
         week = autoCalWeek()
         ls = session.query(CourseInfo.time_ls, CourseInfo.name, CourseInfo.loc_ls) \
@@ -146,7 +146,7 @@ class CourseAPI:
         return ret
 
     @staticmethod
-    @APIFuncWrapper(need_commit=False)
+    @APIFuncWrapper
     def QryScheduleWithTeacher(user_id: str, session: Session = None):
         week = autoCalWeek()
         ls = session.query(CourseInfo.time_ls, CourseInfo.name, CourseInfo.loc_ls) \
@@ -178,7 +178,7 @@ class CourseAPI:
         return {'status': True}
 
     @staticmethod
-    @APIFuncWrapper(need_commit=False)
+    @APIFuncWrapper
     def QryGrade(user_id: str, session: Session = None):
         ls = session.query(CourseInfo.name, StudentCourse.score) \
             .filter(CourseInfo.course_id == StudentCourse.course_id) \
@@ -186,3 +186,35 @@ class CourseAPI:
             .filter(StudentCourse.score >= 0).all()
         ret = {i[0]: i[1] for i in ls} if ls else {'status': False}
         return ret
+
+    @staticmethod
+    @APIFuncWrapper
+    def QryAllCourseIdName(user_id: str, session: Session = None):
+        ls = session.query(CourseInfo.course_id, CourseInfo.name).filter(CourseInfo.course_id.in_(
+                [i[0] for i in session.query(TeacherCourse.course_id)
+                    .filter(TeacherCourse.user_id.like(user_id))
+                    .filter(TeacherCourse.active).all()]
+        )).all()
+        return {i[0]: i[1] for i in ls} if ls else {'status': False}
+
+    @staticmethod
+    @APIFuncWrapper
+    def QryStudentsByCourseId(course_id, session: Session = None):
+        ls = session.query(StudentCourse.user_id)\
+            .filter(StudentCourse.course_id == course_id)\
+            .filter(StudentCourse.score < 0).all()
+        return [i[0] for i in ls] if ls else {'status': False}
+
+    @staticmethod
+    @APIFuncWrapper
+    def QryGradesByStudent(user_id: str, session: Session = None):
+        ls = session.query(StudentCourse.course_id, StudentCourse.score)\
+            .filter(StudentCourse.user_id.like(user_id))\
+            .filter(StudentCourse.score >= 0).all()
+        scs = {i[0]: i[1] for i in ls}
+        cids = [i[0] for i in ls]
+        ls = session.query(CourseInfo).filter(CourseInfo.course_id.in_(cids)).all()
+        ls = [to_dict(i) for i in ls]
+        for _ in ls:
+            _['grade'] = scs[_['course_id']]
+        return ls if ls else {'status': False}

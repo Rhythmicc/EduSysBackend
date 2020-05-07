@@ -35,7 +35,7 @@ class UserAPI:
         return {'status': ret}
 
     @staticmethod
-    @APIFuncWrapper(need_commit=False)
+    @APIFuncWrapper
     def QryUser(user_id: str, password: str, session: Session = None):
         user = session.query(User).filter(User.user_id.like(user_id)).first()
         ret = {'status': user.password == password, 'role': user.role} \

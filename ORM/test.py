@@ -1,3 +1,3 @@
 from ORM.Course import CourseAPI
 
-print(CourseAPI.QryScheduleWithTeacher("zhuxuefeng"))
+print(CourseAPI.QryGradesByStudent('2017011344'))

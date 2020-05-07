@@ -32,7 +32,7 @@ class TeacherAPI:
         return {'status': True}
 
     @staticmethod
-    @APIFuncWrapper(need_commit=False)
+    @APIFuncWrapper
     def QryTeacher(user_id: str, session: Session = None):
         tc = session.query(TeacherInfo).filter(TeacherInfo.user_id.like(user_id)).first()
         return to_dict(tc)

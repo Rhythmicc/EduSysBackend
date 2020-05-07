@@ -33,7 +33,7 @@ class StudentAPI:
         return True
 
     @staticmethod
-    @APIFuncWrapper(need_commit=False)
+    @APIFuncWrapper
     def QryStudent(user_id: str, session: Session = None):
         stu = session.query(StudentInfo).filter(StudentInfo.user_id.like(user_id)).first()
         return to_dict(stu)

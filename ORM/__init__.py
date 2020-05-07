@@ -1,6 +1,7 @@
 import datetime
 import math
 
+from functools import wraps
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, scoped_session
 
@@ -9,29 +10,28 @@ engine = create_engine('mysql+pymysql://edu_sys_client:P7pXAFKXbMLB3D5vTdmhnT4OX
 Session = sessionmaker(bind=engine)
 
 
-def APIFuncWrapper(need_commit=True):
-    def funcWrapper(func):
-        def wrapper(*args, **kwargs):
-            session = scoped_session(Session)
-            try:
-                ret = func(*args, **kwargs, session=session)
-                if need_commit:
-                    session.commit()
-            except Exception:
-                ret = {'status': False}
-                session.rollback()
-            finally:
-                session.close()
-            return ret
-        return wrapper
-    return funcWrapper
+def APIFuncWrapper(func):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        session = scoped_session(Session)
+        try:
+            ret = func(*args, **kwargs, session=session)
+            session.commit()
+        except Exception as e:
+            print(repr(e))
+            ret = {'status': False}
+            session.rollback()
+        finally:
+            session.close()
+        return ret
+    return wrapper
 
 
 def to_dict(obj):
     return {c.name: getattr(obj, c.name) for c in obj.__table__.columns}
 
 
-@APIFuncWrapper(need_commit=False)
+@APIFuncWrapper
 def autoCalWeek(session: Session = None):
     from ORM.Tables import TimeInfo
     today = datetime.date.today()

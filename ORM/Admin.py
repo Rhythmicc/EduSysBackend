@@ -26,7 +26,7 @@ class AdminAPI:
         return {'status': True}
 
     @staticmethod
-    @APIFuncWrapper(need_commit=False)
+    @APIFuncWrapper
     def QryAdmin(user_id: str, session: Session = None):
         user = session.query(AdminInfo).filter(AdminInfo.user_id.like(user_id)).first()
         return to_dict(user)
