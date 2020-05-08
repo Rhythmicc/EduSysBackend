@@ -93,3 +93,9 @@ class TimeInfo(Base):
         PrimaryKeyConstraint(year, semester),
         Index(year, semester, unique=True)
     )
+
+
+class ActivityStatus(Base):
+    __tablename__ = 'activitystatus'
+    activity = Column(String(30), nullable=False, index=True, primary_key=True)
+    status = Column(Boolean, nullable=False)

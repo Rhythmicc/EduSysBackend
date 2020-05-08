@@ -1,3 +1,3 @@
-from ORM.Course import CourseAPI
+from ORM.Activity import ActivityAPI
 
-print(CourseAPI.QryGradesByStudent('2017011344'))
+print(ActivityAPI.AddActivity('elective'))
