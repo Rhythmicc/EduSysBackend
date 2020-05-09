@@ -234,4 +234,30 @@ class CourseAPI:
             .filter(CourseInfo.course_id.in_([i[0] for i in cls]))\
             .filter(CourseInfo.start_week > week)\
             .all()
-        return [{'start_week': i[0], 'weeks': i[1], 'time_ls': i[2]} for i in cls] if cls else {'status': False}
+        return [{'start_week': i[0], 'weeks': i[1], 'time_ls': i[2]} for i in cls] if cls \
+            else {'status': False, 'msg': 'No limit'}
+
+    @staticmethod
+    @APIFuncWrapper
+    def DropableCourses(user_id: str, session: Session = None):
+        week = autoCalWeek()
+        cls = session.query(StudentCourse.course_id) \
+            .filter(StudentCourse.user_id.like(user_id)) \
+            .filter(StudentCourse.score < 0).all()
+        cls = session.query(CourseInfo)\
+            .filter(CourseInfo.course_id.in_([i[0] for i in cls]))\
+            .filter(CourseInfo.start_week > week)\
+            .all()
+        return [to_dict(i) for i in cls] if cls else {'status': False}
+
+    @staticmethod
+    @APIFuncWrapper
+    def DropCourse(user_id: str, course_id: int, session: Session = None):
+        info = session.query(StudentCourse)\
+            .filter(StudentCourse.user_id.like(user_id))\
+            .filter(StudentCourse.course_id == course_id).first()
+        if info:
+            session.delete(info)
+            info = session.query(Elective).filter(Elective.course_id == course_id).first()
+            info.rest += 1
+        return {'status': True}

@@ -70,3 +70,13 @@ async def Select_Course(dt: SelectCourseInfo):
         ret = CourseAPI.SelectCourse(dt.user_id, i)
         res[i] = ret['status']
     return res
+
+
+@router.get('/DropableCourse/{user_id}')
+async def Dropable_Courses(user_id: str):
+    return CourseAPI.DropableCourses(user_id)
+
+
+@router.get('/DropCourse/{user_id}')
+async def Drop_Course(user_id: str, cid: int):
+    return CourseAPI.DropCourse(user_id, cid)
