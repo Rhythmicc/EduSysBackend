@@ -1,6 +1,7 @@
 from ORM.Student import StudentAPI
 from ORM.Teacher import TeacherAPI
 from ORM.Admin import AdminAPI
+from ORM.Course import CourseAPI
 from fastapi import APIRouter
 from . import *
 
@@ -39,3 +40,8 @@ async def Alter_Teacher(dt: TeacherInfo):
 @router.post('/info/altManager')
 async def AltManager(dt: AdminInfo):
     return AdminAPI.AltAdmin(dt.user_id, dt.name, dt.gender == 'male')
+
+
+@router.get('/StudentCalendar/{user_id}')
+async def Student_Calendar(user_id: str):
+    return CourseAPI.StudentCalendar(user_id)

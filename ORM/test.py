@@ -1,3 +1,3 @@
-from ORM.Activity import ActivityAPI
+from ORM.Course import CourseAPI
 
-print(ActivityAPI.AddActivity('elective'))
+print(CourseAPI.StudentCalendar('2017011344'))

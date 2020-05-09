@@ -122,10 +122,14 @@ class CourseAPI:
     @staticmethod
     @APIFuncWrapper
     def QrySelectableCourse(session: Session = None):
+        rls = session.query(Elective.course_id, Elective.rest).filter(Elective.rest > 0).all()
         ls = session.query(CourseInfo).filter(CourseInfo.course_id.in_(
-            [i[0] for i in session.query(Elective.course_id).filter(Elective.rest > 0).all()]
+            [i[0] for i in rls]
         )).all()
-        ret = [to_dict(i) for i in ls] if ls else {'status': False}
+        rls = {i[0]: i[1] for i in rls}
+        ls = [to_dict(i) for i in ls]
+        [i.update({'rest': rls[i['course_id']]}) for i in ls]
+        ret = ls if ls else {'status': False}
         return ret
 
     @staticmethod
@@ -218,3 +222,16 @@ class CourseAPI:
         for _ in ls:
             _['grade'] = scs[_['course_id']]
         return ls if ls else {'status': False}
+
+    @staticmethod
+    @APIFuncWrapper
+    def StudentCalendar(user_id: str, session: Session = None):
+        week = autoCalWeek()
+        cls = session.query(StudentCourse.course_id)\
+            .filter(StudentCourse.user_id.like(user_id))\
+            .filter(StudentCourse.score < 0).all()
+        cls = session.query(CourseInfo.start_week, CourseInfo.weeks, CourseInfo.time_ls)\
+            .filter(CourseInfo.course_id.in_([i[0] for i in cls]))\
+            .filter(CourseInfo.start_week > week)\
+            .all()
+        return [{'start_week': i[0], 'weeks': i[1], 'time_ls': i[2]} for i in cls] if cls else {'status': False}
