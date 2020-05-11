@@ -1,3 +1,3 @@
 from ORM.Course import CourseAPI
 
-print(CourseAPI.StudentCalendar('2017011344'))
+print(CourseAPI.SpecialSelectCourse('2017011344', 2))

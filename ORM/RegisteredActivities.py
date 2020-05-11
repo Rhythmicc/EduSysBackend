@@ -1,4 +1,4 @@
-from ORM.Tables import Elective, CourseInfo
+from ORM.Tables import Elective, CourseInfo, SpElective
 from . import APIFuncWrapper, Session, autoCalWeek
 
 
@@ -19,4 +19,5 @@ class ElectiveActivity:
     @APIFuncWrapper
     def disable(session: Session = None):
         session.delete(session.query(Elective).all())
+        session.delete(session.query(SpElective).all())
         return {'status': True}

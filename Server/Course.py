@@ -67,9 +67,19 @@ async def Selectable_Course():
 async def Select_Course(dt: SelectCourseInfo):
     res = {}
     for i in dt.course_ls:
-        ret = CourseAPI.SelectCourse(dt.user_id, i)
+        ret = CourseAPI.SpecialSelectCourse(dt.user_id, i) if dt.force else CourseAPI.SelectCourse(dt.user_id, i)
         res[i] = ret['status']
     return res
+
+
+@router.get('/ApproveSelect/{user_id}')
+async def Approve_Select(user_id: str, course_id: int, approve: bool):
+    return CourseAPI.ApproveSpSelectCourse(user_id, course_id, approve)
+
+
+@router.get('/NeedApproveElective')
+async def Need_Approve_Select():
+    return CourseAPI.NeedApproveElective()
 
 
 @router.get('/DropableCourse/{user_id}')

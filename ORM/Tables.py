@@ -99,3 +99,14 @@ class ActivityStatus(Base):
     __tablename__ = 'activitystatus'
     activity = Column(String(30), nullable=False, index=True, primary_key=True)
     status = Column(Boolean, nullable=False)
+
+
+class SpElective(Base):
+    __tablename__ = 'sp_elective'
+    user_id = Column(String(30), ForeignKey("studentinfo.user_id"), nullable=False, index=True)
+    course_id = Column(Integer, ForeignKey("courseinfo.course_id"), nullable=False, index=True)
+    __table_args__ = (
+        UniqueConstraint(user_id, course_id, name='sp_elective_user_id_course_id_uindex'),
+        PrimaryKeyConstraint(user_id, course_id),
+        Index(user_id, course_id, unique=True)
+    )

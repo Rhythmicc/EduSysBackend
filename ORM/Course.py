@@ -1,4 +1,4 @@
-from ORM.Tables import CourseInfo, StudentCourse, TeacherCourse, Elective
+from ORM.Tables import CourseInfo, StudentCourse, TeacherCourse, Elective, SpElective
 from . import APIFuncWrapper, to_dict, autoCalWeek, Session
 
 
@@ -178,8 +178,46 @@ class CourseAPI:
     @staticmethod
     @APIFuncWrapper
     def SpecialSelectCourse(user_id: str, course_id: int, session: Session = None):
-        session.add(StudentCourse(user_id=user_id, course_id=course_id))
-        return {'status': True}
+        week = autoCalWeek()
+        if session.query(CourseInfo.course_id)\
+                .filter(CourseInfo.course_id == course_id)\
+                .filter(CourseInfo.start_week > week)\
+                .first():
+            session.add(SpElective(user_id=user_id, course_id=course_id))
+            return {'status': True, 'msg': 'submit success'}
+        else:
+            return {'status': False, 'msg': '无课程或无法选课'}
+
+    @staticmethod
+    @APIFuncWrapper
+    def ApproveSpSelectCourse(user_id: str, course_id: int, approve: bool, session: Session = None):
+        target = session.query(SpElective)\
+            .filter(SpElective.user_id.like(user_id))\
+            .filter(SpElective.course_id == course_id).first()
+        if target:
+            if approve:
+                session.add(StudentCourse(user_id=user_id, course_id=course_id))
+            session.delete(target)
+            return {'status': True, 'msg': 'Approve Success'}
+        else:
+            return {'status': False, 'msg': 'No such application'}
+
+    @staticmethod
+    @APIFuncWrapper
+    def NeedApproveElective(session: Session = None):
+        dt = session.query(SpElective.course_id, SpElective.user_id).all()
+        cid_user = {}
+        for i in dt:
+            if i[0] not in cid_user:
+                cid_user[i[0]] = []
+            cid_user[i[0]].append(i[1])
+        cls = session.query(CourseInfo.course_id, CourseInfo.name, CourseInfo.score)\
+            .filter(CourseInfo.course_id.in_(list(cid_user.keys()))).all()
+        ret = []
+        for i in cls:
+            for user in cid_user[i[0]]:
+                ret.append({'course_id': i[0], 'name': i[1], 'score': i[2], 'user_id': user})
+        return ret if ret else {'status': False, 'msg': 'No application'}
 
     @staticmethod
     @APIFuncWrapper

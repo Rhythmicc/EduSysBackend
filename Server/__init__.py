@@ -46,3 +46,4 @@ class DayForm(BaseModel):
 class SelectCourseInfo(BaseModel):
     user_id: str
     course_ls: list
+    force: bool = False
