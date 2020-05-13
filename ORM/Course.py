@@ -299,3 +299,12 @@ class CourseAPI:
             info = session.query(Elective).filter(Elective.course_id == course_id).first()
             info.rest += 1
         return {'status': True}
+
+    @staticmethod
+    @APIFuncWrapper
+    def CloseClass(user_id: str, course_id: int, session: Session = None):
+        cls = session.query(TeacherCourse)\
+            .filter(TeacherCourse.user_id.like(user_id))\
+            .filter(TeacherCourse.course_id == course_id).first()
+        cls.active = False
+        return {'status': True}

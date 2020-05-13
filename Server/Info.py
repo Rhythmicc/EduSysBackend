@@ -45,3 +45,8 @@ async def AltManager(dt: AdminInfo):
 @router.get('/StudentCalendar/{user_id}')
 async def Student_Calendar(user_id: str):
     return CourseAPI.StudentCalendar(user_id)
+
+
+@router.get('/AllStudentByCourse/{course_id}')
+async def All_Student_By_Course(course_id: int):
+    return StudentAPI.SelectAllStudentByCourse(course_id)

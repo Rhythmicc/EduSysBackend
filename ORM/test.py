@@ -1,3 +1,3 @@
-from ORM.Course import CourseAPI
+from ORM.Student import StudentAPI
 
-print(CourseAPI.SpecialSelectCourse('2017011344', 2))
+print(StudentAPI.SelectAllStudentByCourse(1))

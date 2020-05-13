@@ -90,3 +90,8 @@ async def Dropable_Courses(user_id: str):
 @router.get('/DropCourse/{user_id}')
 async def Drop_Course(user_id: str, cid: int):
     return CourseAPI.DropCourse(user_id, cid)
+
+
+@router.get('CloseClass/{user_id}')
+async def Close_Class(user_id: str, course_id: int):
+    return CourseAPI.CloseClass(user_id, course_id)

@@ -1,4 +1,4 @@
-from ORM.Tables import StudentInfo
+from ORM.Tables import StudentInfo, StudentCourse
 from . import APIFuncWrapper, to_dict, Session
 
 
@@ -37,3 +37,13 @@ class StudentAPI:
     def QryStudent(user_id: str, session: Session = None):
         stu = session.query(StudentInfo).filter(StudentInfo.user_id.like(user_id)).first()
         return to_dict(stu)
+
+    @staticmethod
+    @APIFuncWrapper
+    def SelectAllStudentByCourse(course_id: int, session: Session = None):
+        sls = session.query(StudentCourse.user_id)\
+            .filter(StudentCourse.course_id == course_id)\
+            .filter(StudentCourse.score < 0)\
+            .all()
+        res = session.query(StudentInfo).filter(StudentInfo.user_id.in_([i[0] for i in sls])).all()
+        return [to_dict(i) for i in res] if res else {'status': False}
